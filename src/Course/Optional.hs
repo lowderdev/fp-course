@@ -1,5 +1,5 @@
-{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 module Course.Optional where
 
@@ -35,8 +35,8 @@ mapOptional f (Full x) = Full (f x)
 -- >>> bindOptional (\n -> if even n then Full (n - 1) else Full (n + 1)) (Full 9)
 -- Full 10
 bindOptional :: (a -> Optional b) -> Optional a -> Optional b
-bindOptional _ Empty =  Empty
-bindOptional f (Full x) =  f x
+bindOptional _ Empty = Empty
+bindOptional f (Full x) = f x
 
 -- | Return the possible value if it exists; otherwise, the second argument.
 --

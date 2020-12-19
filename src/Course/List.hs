@@ -202,15 +202,7 @@ flattenAgain = flatMap id
 -- >>> seqOptional (Empty :. map Full infinity)
 -- Empty
 seqOptional :: List (Optional a) -> Optional (List a)
-seqOptional =
-  foldRight
-    ( \x xs -> case x of
-        Empty -> Empty
-        Full y -> case xs of
-          Empty -> Empty
-          Full ys -> Full (y :. ys)
-    )
-    (Full Nil)
+seqOptional = foldRight (twiceOptional (:.)) (Full Nil)
 
 -- | Find the first element in the list matching the predicate.
 --
@@ -555,19 +547,11 @@ drop _ Nil =
 drop n (_ :. xs) =
   drop (n -1) xs
 
-repeat ::
-  a ->
-  List a
-repeat x =
-  x :. repeat x
+repeat :: a -> List a
+repeat x = x :. repeat x
 
-replicate ::
-  (Num n, Ord n) =>
-  n ->
-  a ->
-  List a
-replicate n x =
-  take n (repeat x)
+replicate :: (Num n, Ord n) => n -> a -> List a
+replicate n x = take n (repeat x)
 
 reads ::
   P.Read a =>
