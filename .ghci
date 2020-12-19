@@ -3,7 +3,7 @@
 :set -package containers
 :l src/Course.hs src/Test/Loader.hs
 :m + Test.Loader
-:set prompt ">> "
+:set prompt "λ> "
 :set -Wall
 :set -fno-warn-unused-binds
 :set -fno-warn-unused-do-bind
