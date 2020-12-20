@@ -1,7 +1,7 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE RebindableSyntax #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
 module Course.Monad where
 
@@ -11,7 +11,7 @@ import Course.ExactlyOne
 import Course.Functor
 import Course.List
 import Course.Optional
-import qualified Prelude as P((=<<))
+import qualified Prelude as P ((=<<))
 
 -- | All instances of the `Monad` type-class must satisfy one law. This law
 -- is not checked by the compiler. This law is given as:
@@ -20,10 +20,7 @@ import qualified Prelude as P((=<<))
 --   `∀f g x. g =<< (f =<< x) ≅ ((g =<<) . f) =<< x`
 class Applicative k => Monad k where
   -- Pronounced, bind.
-  (=<<) ::
-    (a -> k b)
-    -> k a
-    -> k b
+  (=<<) :: (a -> k b) -> k a -> k b
 
 infixr 1 =<<
 
@@ -32,48 +29,32 @@ infixr 1 =<<
 -- >>> (\x -> ExactlyOne(x+1)) =<< ExactlyOne 2
 -- ExactlyOne 3
 instance Monad ExactlyOne where
-  (=<<) ::
-    (a -> ExactlyOne b)
-    -> ExactlyOne a
-    -> ExactlyOne b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance ExactlyOne"
+  (=<<) :: (a -> ExactlyOne b) -> ExactlyOne a -> ExactlyOne b
+  (=<<) = bindExactlyOne
 
 -- | Binds a function on a List.
 --
 -- >>> (\n -> n :. n :. Nil) =<< (1 :. 2 :. 3 :. Nil)
 -- [1,1,2,2,3,3]
 instance Monad List where
-  (=<<) ::
-    (a -> List b)
-    -> List a
-    -> List b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance List"
+  (=<<) :: (a -> List b) -> List a -> List b
+  (=<<) = flatMap
 
 -- | Binds a function on an Optional.
 --
 -- >>> (\n -> Full (n + n)) =<< Full 7
 -- Full 14
 instance Monad Optional where
-  (=<<) ::
-    (a -> Optional b)
-    -> Optional a
-    -> Optional b
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance Optional"
+  (=<<) :: (a -> Optional b) -> Optional a -> Optional b
+  (=<<) = bindOptional
 
 -- | Binds a function on the reader ((->) t).
 --
 -- >>> ((*) =<< (+10)) 7
 -- 119
 instance Monad ((->) t) where
-  (=<<) ::
-    (a -> ((->) t b))
-    -> ((->) t a)
-    -> ((->) t b)
-  (=<<) =
-    error "todo: Course.Monad (=<<)#instance ((->) t)"
+  (=<<) :: (a -> (->) t b) -> (->) t a -> (->) t b
+  (=<<) f g x = f (g x) x
 
 -- | Witness that all things with (=<<) and (<$>) also have (<*>).
 --
@@ -106,13 +87,8 @@ instance Monad ((->) t) where
 --
 -- >>> ((*) <**> (+2)) 3
 -- 15
-(<**>) ::
-  Monad k =>
-  k (a -> b)
-  -> k a
-  -> k b
-(<**>) =
-  error "todo: Course.Monad#(<**>)"
+(<**>) :: Monad k => k (a -> b) -> k a -> k b
+(<**>) f x = (<$> x) =<< f
 
 infixl 4 <**>
 
@@ -129,12 +105,8 @@ infixl 4 <**>
 --
 -- >>> join (+) 7
 -- 14
-join ::
-  Monad k =>
-  k (k a)
-  -> k a
-join =
-  error "todo: Course.Monad#join"
+join :: Monad k => k (k a) -> k a
+join = (id =<<)
 
 -- | Implement a flipped version of @(=<<)@, however, use only
 -- @join@ and @(<$>)@.
@@ -142,13 +114,8 @@ join =
 --
 -- >>> ((+10) >>= (*)) 7
 -- 119
-(>>=) ::
-  Monad k =>
-  k a
-  -> (a -> k b)
-  -> k b
-(>>=) =
-  error "todo: Course.Monad#(>>=)"
+(>>=) :: Monad k => k a -> (a -> k b) -> k b
+(>>=) x f = join (f <$> x)
 
 infixl 1 >>=
 
@@ -157,14 +124,8 @@ infixl 1 >>=
 --
 -- >>> ((\n -> n :. n :. Nil) <=< (\n -> n+1 :. n+2 :. Nil)) 1
 -- [2,2,3,3]
-(<=<) ::
-  Monad k =>
-  (b -> k c)
-  -> (a -> k b)
-  -> a
-  -> k c
-(<=<) =
-  error "todo: Course.Monad#(<=<)"
+(<=<) :: Monad k => (b -> k c) -> (a -> k b) -> a -> k c
+(<=<) f g x = f =<< g x
 
 infixr 1 <=<
 
