@@ -82,34 +82,44 @@ the contents of c
 -- Given the file name, and file contents, print them.
 -- Use @putStrLn@.
 printFile :: FilePath -> Chars -> IO ()
-printFile fp cs = putStrLn fp
-
--- let a = readFile fp
---  in putStrLn =<< a
+printFile filePath contents = putStrLn ("============ " ++ filePath) >> putStrLn contents
 
 -- Given a list of (file name and file contents), print each.
 -- Use @printFile@.
 printFiles :: List (FilePath, Chars) -> IO ()
-printFiles = error "todo: Course.FileIO#printFiles"
+printFiles fileData = void $ sequence $ uncurry printFile <$> fileData
 
 -- Given a file name, return (file name and file contents).
 -- Use @readFile@.
 getFile :: FilePath -> IO (FilePath, Chars)
-getFile = error "todo: Course.FileIO#getFile"
+getFile filePath = (,) filePath <$> readFile filePath
 
 -- Given a list of file names, return list of (file name and file contents).
 -- Use @getFile@.
 getFiles :: List FilePath -> IO (List (FilePath, Chars))
-getFiles = error "todo: Course.FileIO#getFiles"
+getFiles filePaths = sequence (getFile <$> filePaths)
 
 -- Given a file name, read it and for each line in that file, read and print contents of each.
 -- Use @getFiles@, @lines@, and @printFiles@.
 run :: FilePath -> IO ()
-run = error "todo: Course.FileIO#run"
+run filePath = printFiles =<< (getFiles . lines) =<< readFile filePath
 
 -- /Tip:/ use @getArgs@ and @run@
 main :: IO ()
-main = error "todo: Course.FileIO#main"
+main =
+  getArgs
+    >>= \args -> case args of
+      filePath :. Nil -> run filePath
+      _ -> putStrLn "please provide file path"
+
+--  in case x of
+--       IO Nil -> putStrLn "no argument given"
+--       IO (x :. _ :. Nil) -> putStrLn "Too many args given"
+--       IO (x :. Nil) -> _todo1
+
+-- let args = getArgs
+--     x = (\cs -> _todo1) <$> args
+--  in _todo2
 
 ----
 
