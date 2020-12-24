@@ -178,19 +178,16 @@ distinct xs = eval (filtering (\a -> State (\s -> (S.notMember a s, S.insert a s
 -- >>> isHappy 44
 -- True
 isHappy :: Integer -> Bool
-isHappy i = checkHappy i Nil
+isHappy = contains 1 . firstRepeat . produce integerToSumOfSquares . fromInteger
 
-checkHappy :: Integer -> List Int -> Bool
-checkHappy 1 _ = True
-checkHappy x xs =
-  let newX = (sumOfSquares . digitsOfInt) (fromInteger x)
-   in if elem newX xs then False else checkHappy (toInteger newX) (newX :. xs)
+integerToSumOfSquares :: Int -> Int
+integerToSumOfSquares = sumOfSquares . digitsOfInt
 
 digitsOfInt :: Int -> List Int
 digitsOfInt = (digitToInt <$>) . show'
 
 sumOfSquares :: List Int -> Int
-sumOfSquares = foldRight (\a b -> square a + b) 0
+sumOfSquares = sum . map square
 
 square :: Int -> Int
 square = join (*)
