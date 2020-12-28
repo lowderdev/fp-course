@@ -301,8 +301,11 @@ replicateA n ka = sequence (replicate n ka)
 filtering :: Applicative k => (a -> k Bool) -> List a -> k (List a)
 filtering p = foldRight f (pure Nil)
   where
-    f x = lift2 (g x) (p x)
-    g x b xs = if b then x :. xs else xs
+    f = \x xs -> lift2 (g x) (p x) xs
+    g = \x b xs ->
+      if b
+        then x :. xs
+        else xs
 
 -----------------------
 -- SUPPORT LIBRARIES --
