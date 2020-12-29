@@ -61,7 +61,7 @@ infixl 4 >$<
 -- False
 instance Contravariant Predicate where
   (>$<) :: (b -> a) -> Predicate a -> Predicate b
-  (>$<) = error "todo: Course.Contravariant (>$<)#instance Predicate"
+  (>$<) f (Predicate g) = Predicate (g . f)
 
 -- | Use the function before comparing.
 --
@@ -69,7 +69,7 @@ instance Contravariant Predicate where
 -- GT
 instance Contravariant Comparison where
   (>$<) :: (b -> a) -> Comparison a -> Comparison b
-  (>$<) = error "todo: Course.Contravariant (>$<)#instance Comparison"
+  (>$<) f (Comparison g) = Comparison (\x y -> g (f x) (f y))
 
 -- | The kind of the argument to 'Contravariant' is @Type -> Type@, so
 -- our '(>$<)' only works on the final type argument. The
@@ -80,11 +80,11 @@ instance Contravariant Comparison where
 -- 15
 instance Contravariant (SwappedArrow t) where
   (>$<) :: (b -> a) -> SwappedArrow x a -> SwappedArrow x b
-  (>$<) = error "todo: Course.Contravariant (>$<)#instance SwappedArrow"
+  (>$<) f (SwappedArrow g) = SwappedArrow (g . f)
 
 -- | If we give our 'Contravariant' an @a@, then we can "accept" any
 -- @b@ by ignoring it.
 --
 -- prop> \x -> runPredicate (3 >$ Predicate odd) x == True
 (>$) :: Contravariant k => a -> k a -> k b
-(>$) = error "todo: Course.Contravariant#(>$)"
+(>$) = (>$<) . const
