@@ -4,6 +4,7 @@
 
 module Course.Functor where
 
+import Course.Contravariant
 import Course.Core
 import Course.ExactlyOne
 import Course.List
@@ -93,6 +94,36 @@ instance Functor ((->) t) where
 -- ()
 void :: Functor k => k a -> k ()
 void = (<$) ()
+
+--------------------------------------------------
+-- Data types that are not (covariant) functors --
+--------------------------------------------------
+-- https://stackoverflow.com/a/7220548
+
+-- cannot define (covariant) Functor instance
+-- but CAN define one for Contravariant
+newtype NotFunctor a = NotFunctor (a -> Int)
+
+instance Functor NotFunctor where
+  (<$>) :: (a -> b) -> NotFunctor a -> NotFunctor b
+  (<$>) = error "impossible: can't construct a `b`"
+
+instance Contravariant NotFunctor where
+  (>$<) :: (b -> a) -> NotFunctor a -> NotFunctor b
+  (>$<) f (NotFunctor g) = NotFunctor (g . f)
+
+-- Endofunctors are "invariant" and therefore
+-- are not covariant or contravariant
+-- https://stackoverflow.com/a/26986211
+newtype Endo a = Endo (a -> a)
+
+instance Functor Endo where
+  (<$>) :: (a -> b) -> Endo a -> Endo b
+  (<$>) = error "impossible: can't construct `b -> b`"
+
+instance Contravariant Endo where
+  (>$<) :: (b -> a) -> Endo a -> Endo b
+  (>$<) = error "impossible: can't construct `b -> b`"
 
 -----------------------
 -- SUPPORT LIBRARIES --
