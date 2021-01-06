@@ -19,7 +19,7 @@ import Course.Optional
 --   `∀f g. f . traverse g ≅ traverse (f . g)`
 --
 -- * The law of identity
---   `∀x. traverse ExactlyOne x ≅ ExactlyOne x`
+--   `∀x. traverse id? ExactlyOne x ≅ ExactlyOne x`
 --
 -- * The law of composition
 --   `∀f g. traverse ((g <$>) . f) ≅ (traverse g <$>) . traverse f`
@@ -48,12 +48,13 @@ instance Traversable Optional where
 --
 -- >>> sequenceA (Full (*10)) 6
 -- Full 60
+-- I tried to explain this to my wife and she called it "swapsies"
 sequenceA :: (Applicative k, Traversable t) => t (k a) -> k (t a)
 sequenceA = traverse id
 
 instance (Traversable f, Traversable g) => Traversable (Compose f g) where
   -- Implement the traverse function for a Traversable instance for Compose
-  traverse f (Compose fga) = Compose <$> sequenceA (sequenceA . (f <$>) <$> fga)
+  traverse f (Compose fga) = Compose <$> traverse (traverse f) fga
 
 -- | The `Product` data type contains one value from each of the two type constructors.
 data Product f g a = Product (f a) (g a)
