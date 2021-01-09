@@ -45,11 +45,11 @@ instance Functor ParseResult where
 
 -- Function to determine whether this @ParseResult@ is an error.
 isErrorResult :: ParseResult a -> Bool
-isErrorResult (Result _ _) = False
 isErrorResult UnexpectedEof = True
 isErrorResult (ExpectedEof _) = True
 isErrorResult (UnexpectedChar _) = True
 isErrorResult (UnexpectedString _) = True
+isErrorResult (Result _ _) = False
 
 -- | Runs the given function on a successful parse result. Otherwise return the same failing parse result.
 onResult :: ParseResult a -> (Input -> a -> ParseResult b) -> ParseResult b
@@ -83,7 +83,12 @@ constantParser = P . const
 -- >>> isErrorResult (parse character "")
 -- True
 character :: Parser Char
-character = error "todo: Course.Parser#character"
+character =
+  P
+    ( \i -> case i of
+        Nil -> UnexpectedEof
+        (x :. xs) -> Result xs x
+    )
 
 -- | Parsers can map.
 -- Write a Functor instance for a @Parser@.
@@ -92,7 +97,7 @@ character = error "todo: Course.Parser#character"
 -- Result >mz< 'A'
 instance Functor Parser where
   (<$>) :: (a -> b) -> Parser a -> Parser b
-  (<$>) = error "todo: Course.Parser (<$>)#instance Parser"
+  (<$>) f (P p) = P ((f <$>) . p)
 
 -- | Return a parser that always succeeds with the given value and consumes no input.
 --
