@@ -417,21 +417,7 @@ firstNameParser = upper .:. list lower
 -- >>> isErrorResult (parse surnameParser "abc")
 -- True
 surnameParser :: Parser Chars
-surnameParser =
-  lift2
-    (:.)
-    upper
-    ( lift2
-        (++)
-        (thisMany 5 lower)
-        (list lower)
-    )
-
-surnameParser2 =
-  upper >>= \c ->
-    thisMany 5 lower >>= \cs ->
-      list lower >>= \t ->
-        valueParser (c :. cs ++ t)
+surnameParser = upper .:. lift2 (++) (thisMany 5 lower) (list lower)
 
 -- | Write a parser for Person.smoker.
 --
