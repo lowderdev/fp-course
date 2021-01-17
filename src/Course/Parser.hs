@@ -363,7 +363,7 @@ sequenceParser = sequence
 -- >>> isErrorResult (parse (thisMany 4 upper) "ABcDef")
 -- True
 thisMany :: Int -> Parser a -> Parser (List a)
-thisMany n pa = sequence (replicate n pa)
+thisMany = replicateA
 
 -- | This one is done for you.
 --
