@@ -4,5 +4,7 @@
   "c": {
     "thing": 3.1419,
     "other": "hey"
-  }
+  },
+  "d": null,
+  "w3ird#%(*": "hex: \u1234"
 }

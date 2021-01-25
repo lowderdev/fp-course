@@ -2,7 +2,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RebindableSyntax #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TupleSections #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 module Course.JsonParser where
@@ -159,7 +158,7 @@ trySpecialChar c =
 -- >>> isErrorResult (parse jsonNumber "abc")
 -- True
 jsonNumber :: Parser Rational
-jsonNumber =
+jsonNumber = tok $
   P
     ( \i -> case readFloats i of
         Empty -> UnexpectedString i
@@ -262,13 +261,13 @@ jsonObject =
 -- Result >< [("key1",JsonTrue),("key2",JsonArray [JsonRational (7 % 1),JsonFalse]),("key3",JsonObject [("key4",JsonNull)])]
 jsonValue :: Parser JsonValue
 jsonValue =
-  (jsonNull >> pure JsonNull)
-    ||| (jsonTrue >> pure JsonTrue)
-    ||| (jsonFalse >> pure JsonFalse)
-    ||| (jsonNumber >>= (pure . JsonRational))
-    ||| (jsonString >>= (pure . JsonString))
-    ||| (jsonObject >>= (pure . JsonObject))
-    ||| (jsonArray >>= (pure . JsonArray))
+  (JsonNull <$ jsonNull)
+    ||| (JsonTrue <$ jsonTrue)
+    ||| (JsonFalse <$ jsonFalse)
+    ||| (JsonString <$> jsonString)
+    ||| (JsonRational <$> jsonNumber)
+    ||| (JsonObject <$> jsonObject)
+    ||| (JsonArray <$> jsonArray)
 
 -- | Read a file into a JSON value.
 --
