@@ -192,7 +192,11 @@ instance Applicative Parser where
 -- >>> isErrorResult (parse (satisfy isUpper) "abc")
 -- True
 satisfy :: (Char -> Bool) -> Parser Char
-satisfy p = (\c -> if p c then valueParser c else unexpectedCharParser c) =<< character
+satisfy p =
+  character >>= \c ->
+    if p c
+      then valueParser c
+      else unexpectedCharParser c
 
 -- | Return a parser that produces the given character but fails if
 --
