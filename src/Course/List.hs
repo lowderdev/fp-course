@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE NoImplicitPrelude #-}
@@ -254,7 +255,6 @@ flattenAgain = flatMap id
 --
 -- >>> seqOptional (Empty :. map Full infinity)
 -- Empty
-
 seqOptional :: List (Optional a) -> Optional (List a)
 seqOptional = foldRight (twiceOptional (:.)) (Full Nil)
 
@@ -376,11 +376,8 @@ largeList ::
 largeList =
   listh [1 .. 50000]
 
-hlist ::
-  List a ->
-  [a]
-hlist =
-  foldRight (:) []
+hlist :: List a -> [a]
+hlist = foldRight (:) []
 
 listh ::
   [a] ->
@@ -690,9 +687,11 @@ readFloat ::
 readFloat =
   mapOptional fst . readFloats
 
-instance IsString (List Char) where
-  fromString =
-    listh
+-- Must use {-# LANGUAGE GADTs #-}
+-- Thanks pedrofurla!
+-- Per https://hackage.haskell.org/package/base-4.14.1.0/docs/src/Data.String.html#line-43
+instance (a ~ Char) => IsString (List a) where
+  fromString = listh
 
 type Chars =
   List Char
