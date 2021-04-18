@@ -113,7 +113,11 @@ toSpecialCharacter c =
 -- >>> isErrorResult (parse jsonString "\"\\abc\"def")
 -- True
 jsonString :: Parser Chars
-jsonString = between (is '"') (charTok '"') (list $ specialCharParser ||| satisfy (/= '"'))
+jsonString =
+  between
+    (is '"')
+    (charTok '"')
+    (list $ specialCharParser ||| satisfy (\x -> (x /= '"') && (x /= '\\')))
 
 specialCharParser :: Parser Char
 specialCharParser =
