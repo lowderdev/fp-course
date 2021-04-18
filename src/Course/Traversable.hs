@@ -84,7 +84,5 @@ instance (Functor f, Functor g) => Functor (Coproduct f g) where
 instance (Traversable f, Traversable g) => Traversable (Coproduct f g) where
   -- Implement the traverse function for a Traversable instance for Coproduct
   traverse :: Applicative k => (a -> k b) -> Coproduct f g a -> k (Coproduct f g b)
-  traverse f cofga = go f cofga
-    where
-      go f (InL fa) = InL <$> traverse f fa
-      go f (InR ga) = InR <$> traverse f ga
+  traverse f (InL fa) = InL <$> traverse f fa
+  traverse f (InR ga) = InR <$> traverse f ga

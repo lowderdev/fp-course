@@ -66,7 +66,7 @@ instance (Applicative f, Applicative g) => Applicative (Compose f g) where
 instance (Monad f, Monad g) => Monad (Compose f g) where
   -- Implement the (=<<) function for a Monad instance for Compose
   (=<<) :: (a -> Compose f g b) -> Compose f g a -> Compose f g b
-  (=<<) f (Compose fga) = error "inconceivable"
+  (=<<) = error "inconceivable"
 
 -- Compose $ fga >>= \ga -> _todo
 
