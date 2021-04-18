@@ -1,0 +1,13 @@
+{
+  "friends": [
+    "pfmrph",
+    "pedrofurla",
+    "countoren"
+  ],
+  "jsonParserDone": true,
+  "blah": false,
+  "thing": null,
+  "float": 123.45,
+  "hex": "\uabcd",
+  "special": "\\\b\t \""
+}
