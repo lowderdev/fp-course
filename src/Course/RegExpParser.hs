@@ -11,9 +11,13 @@ module Course.RegExpParser
   )
 where
 
+import Course.Core
 import Course.List
 import Course.Optional
 import Course.Parser
+import Course.Functor
+import Course.Applicative
+import Course.Monad
 import Data.Char
 import Prelude (Eq, Show)
 
@@ -22,7 +26,7 @@ data RegExp
     Normal Char
   | -- | Any character
     Any
-  | -- | Zero or more occurances of the same regexp
+  | -- | Zero or more occurences of the same regexp
     ZeroOrMore RegExp
   | -- | A choice between 2 regexps
     Or RegExp RegExp
@@ -34,9 +38,10 @@ data RegExp
 -- parseRegExp = undefined
 
 regCharacter :: Parser RegExp
-regCharacter = satisfy (notElem "()*|.") >>= Normal
+regCharacter =  satisfy (`notElem` "()*|.") >>= pure . Normal
+ -- or `Normal <$> satisfy (`notElem` "()*|.")`
 
 anyParser :: Parser RegExp
-anyParser = is '.' >> Any
+anyParser = is '.' >> pure Any
 
 -- zeroOrMore :: Parser RegExp
